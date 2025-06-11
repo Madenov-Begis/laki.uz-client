@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL_API = 'https://api.deliver-shop.uz/api/client/v1'
+const BASE_URL_API = 'https://api.laki.uz/api/client/v1'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-expect-error
