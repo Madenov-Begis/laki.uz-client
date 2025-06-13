@@ -24,7 +24,7 @@ export const PageHead = ({ locale, basketCount }: SelectedProductsProps) => {
             </svg>
           </div>
           <div className="text-xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-            Laki.uz
+            SALTANAT OPTOM
           </div>
         </div>
         

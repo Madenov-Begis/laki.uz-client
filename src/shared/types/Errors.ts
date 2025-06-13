@@ -1,4 +1,5 @@
 export interface HTTPError {
-  statusCode: number
+  status_code: number
   message: string
+  errors?: Record<string, string[]>
 }

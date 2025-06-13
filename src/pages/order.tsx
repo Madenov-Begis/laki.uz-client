@@ -14,7 +14,6 @@ interface IFormInput {
   full_name: string
   phone: string
   address: string
-  order_id: string
   basket_ids: number[]
 }
 
@@ -26,9 +25,6 @@ const Order = () => {
   const { locale } = useParams()
 
   const [totalPrice, setTotalPrice] = useState<number | undefined>(undefined)
-  const [deliverPrice, setDeliverPrice] = useState<number | undefined>(
-    undefined
-  )
   const [basketIds, setBasketIds] = useState<number[] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [errorText, setErrorText] = useState('')
@@ -39,14 +35,16 @@ const Order = () => {
     reset,
     control,
     formState: { errors },
+    setError,
+    clearErrors,
   } = useForm<IFormInput>({
     defaultValues: {
       full_name: '',
       phone: '',
       address: '',
-      order_id: '',
       basket_ids: [],
     },
+    mode: 'onBlur',
   })
 
   const getBasket = async () => {
@@ -54,7 +52,6 @@ const Order = () => {
       await CartApi.getAll(locale).then((data) => {
         setBasketIds(data.data.baskets?.map((basket) => basket.id))
         setTotalPrice(data.data.total_price)
-        setDeliverPrice(data.data.deleviry_price)
       })
     } catch (error) {
       console.log(error)
@@ -79,12 +76,14 @@ const Order = () => {
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     try {
       setIsLoading(true)
+      setErrorText('')
+      clearErrors()
+      
       await OrderApi.orderCreate({
         body: {
           ...data,
           basket_ids: basketIds,
           phone: data.phone.slice(1),
-          order_id: data.order_id,
         },
         locale,
       }).then(() => {
@@ -96,7 +95,17 @@ const Order = () => {
     } catch (error) {
       const err = error as HTTPError
 
-      setErrorText(err.message)
+      if (err.errors) {
+        Object.entries(err.errors).forEach(([field, message]) => {
+          const errorMessage = Array.isArray(message) ? message[0] : message
+          setError(field as keyof IFormInput, { 
+            type: 'server',
+            message: errorMessage 
+          })
+        })
+      } else {
+        setErrorText(err.message)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -108,8 +117,16 @@ const Order = () => {
       <div className="text-center mb-6">
         <div className="flex items-center justify-center gap-3 mb-2">
           <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            <svg
+              className="w-5 h-5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
@@ -122,8 +139,16 @@ const Order = () => {
       {errorText && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-6 animate-slide-up">
           <div className="flex items-center gap-3">
-            <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            <svg
+              className="w-5 h-5 text-red-500"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="font-medium">{errorText}</span>
           </div>
@@ -134,23 +159,19 @@ const Order = () => {
       <form className="flex-grow space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <InputRef
-            placeholder={t('register_number')}
-            label={t('register_number')}
-            icon={false}
-            type="tel"
-            error={!!errors.order_id}
-            errorMessage={errors.order_id?.message}
-            {...register('order_id', { required: t('required') })}
-          />
-
-          <InputRef
             placeholder="ФИО"
             label="ФИО"
             icon={false}
             type="text"
             error={!!errors.full_name}
             errorMessage={errors.full_name?.message}
-            {...register('full_name', { required: t('required') })}
+            {...register('full_name', { 
+              required: t('required'),
+              minLength: {
+                value: 2,
+                message: 'ФИО должно содержать минимум 2 символа'
+              },
+            })}
           />
 
           <div className="space-y-2">
@@ -161,7 +182,11 @@ const Order = () => {
               name={'phone'}
               control={control}
               rules={{
-                required: true,
+                required: t('required'),
+                pattern: {
+                  value: /^\+998\s\d{2}\s\d{3}\s\d{2}\s\d{2}$/,
+                  message: 'Введите корректный номер телефона'
+                }
               }}
               render={({ field: { onChange, name, value } }) => (
                 <PatternFormat
@@ -170,7 +195,9 @@ const Order = () => {
                   format="+998 ## ### ## ##"
                   allowEmptyFormatting
                   mask=" "
-                  className="w-full px-4 py-3 text-base transition-all duration-300 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent hover:border-gray-400 bg-white/80 backdrop-blur-sm shadow-soft hover:shadow-medium placeholder-gray-400"
+                  className={`w-full px-4 py-3 text-base transition-all duration-300 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent hover:border-gray-400 bg-white/80 backdrop-blur-sm shadow-soft hover:shadow-medium placeholder-gray-400 ${
+                    errors.phone ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
+                  }`}
                   name={name}
                   onChange={onChange}
                   value={value}
@@ -180,10 +207,18 @@ const Order = () => {
             />
             {errors.phone && (
               <div className="flex items-center gap-2 text-red-500 text-sm">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-                <span>{t('required')}</span>
+                <span>{errors.phone.message}</span>
               </div>
             )}
           </div>
@@ -195,7 +230,13 @@ const Order = () => {
             type="text"
             error={!!errors.address}
             errorMessage={errors.address?.message}
-            {...register('address', { required: t('required') })}
+            {...register('address', { 
+              required: t('required'),
+              minLength: {
+                value: 5,
+                message: 'Адрес должен содержать минимум 5 символов'
+              }
+            })}
           />
         </div>
 
@@ -213,32 +254,31 @@ const Order = () => {
       {/* Order Summary */}
       <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200 rounded-t-2xl shadow-strong p-6 mt-6 animate-fade-in">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-secondary-500 rounded-full"></div>
-            Итого к оплате
-          </h3>
-          
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-gray-600 font-medium">{t('allPrice')}:</span>
+              <span className="text-gray-600 font-medium">
+                {t('allPrice')}:
+              </span>
               <span className="text-lg font-semibold text-gray-800">
-                {totalPrice?.toLocaleString()} ₽
+                {totalPrice?.toLocaleString()}
               </span>
             </div>
-            
-            <div className="flex justify-between items-center">
+
+            {/* <div className="flex justify-between items-center">
               <span className="text-gray-600 font-medium">{t('deliver')}:</span>
               <span className="text-lg font-semibold text-gray-800">
-                {deliverPrice?.toLocaleString()} ₽
+                {deliverPrice?.toLocaleString()} 
               </span>
-            </div>
+            </div> */}
           </div>
 
           <div className="border-t border-gray-200 pt-4">
             <div className="flex justify-between items-center">
-              <span className="text-xl font-bold text-gray-800">{t('itogo')}:</span>
+              <span className="text-xl font-bold text-gray-800">
+                {t('itogo')}:
+              </span>
               <div className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-                {totalPrice?.toLocaleString()} ₽
+                {totalPrice?.toLocaleString()}
               </div>
             </div>
           </div>
