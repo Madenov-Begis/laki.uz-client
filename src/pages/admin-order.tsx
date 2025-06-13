@@ -115,16 +115,11 @@ const AdminOrder = () => {
               Информация о заказе
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 font-medium">ФИО:</span>
                   <span className="font-semibold text-gray-800">{newOrder.full_name}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600 font-medium">Регистрационный номер:</span>
-                  <span className="font-semibold text-gray-800">{newOrder.order_id}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
@@ -176,7 +171,7 @@ const AdminOrder = () => {
                           {item.product.title}
                         </h4>
                         <div className="text-lg font-semibold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-                          {item.product.price.toLocaleString()} ₽
+                          Цена: {item.price.toLocaleString()} 
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="bg-gradient-to-r from-accent-100 to-accent-200 text-accent-700 text-sm font-medium px-2 py-1 rounded-full">

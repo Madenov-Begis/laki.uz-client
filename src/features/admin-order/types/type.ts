@@ -5,7 +5,6 @@ export interface AdminOrderType {
   phone: string
   address: string
   items: OrderProduct[]
-  order_id: number
 }
 
 export interface OrderProduct {
@@ -15,7 +14,6 @@ export interface OrderProduct {
   product: {
     id: number
     image: string
-    price: number
     title: string
   }
 }
