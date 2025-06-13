@@ -88,18 +88,20 @@ const HomePage = () => {
   }, [basketCount])
 
   return (
-    <>
+    <div className="space-y-6 animate-fade-in">
       <PageHead locale={locale} basketCount={basketCount} />
 
-      <Input
-        label={t('search')}
-        placeholder={t('search')}
-        icon={true}
-        type="search"
-        setKeyWord={setKeyWord}
-      />
+      <div className="space-y-4">
+        <Input
+          label={t('search')}
+          placeholder={t('search')}
+          icon={true}
+          type="search"
+          setKeyWord={setKeyWord}
+        />
 
-      {error && <ErrorAlert errorText={error} />}
+        {error && <ErrorAlert errorText={error} />}
+      </div>
 
       <Categories
         categoryLoading={categoryLoading}
@@ -108,7 +110,17 @@ const HomePage = () => {
         category_id={category_id}
       />
 
-      <div className="h-[1px] bg-black/20 mt-5"></div>
+      {/* Decorative Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-200"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-4 bg-gradient-to-r from-blue-50 via-white to-purple-50 text-gray-500 font-medium">
+            Товары
+          </span>
+        </div>
+      </div>
 
       <ProductsList
         isLoading={isLoading}
@@ -117,21 +129,23 @@ const HomePage = () => {
         setBasketCount={setBasketCount}
       />
 
-      {page === totalPage ||
-        (totalPage > 1 && (
-          <div className="text-center mt-5">
-            <button
-              className="btn bg-[#4f46e5] text-white"
-              onClick={() => setPage((prev) => prev + 1)}
-            >
+      {page < totalPage && totalPage > 1 && (
+        <div className="text-center pt-4">
+          <button
+            className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-medium px-8 py-3 rounded-xl shadow-medium hover:shadow-strong transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={isPageLoading}
+          >
+            <div className="flex items-center justify-center gap-2">
               {isPageLoading && (
-                <span className="loading loading-spinner"></span>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               )}
-              {t('show10')}
-            </button>
-          </div>
-        ))}
-    </>
+              <span>{t('show10')}</span>
+            </div>
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
 

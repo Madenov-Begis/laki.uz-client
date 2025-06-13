@@ -57,98 +57,128 @@ export const ProductDetailList = () => {
   }
 
   return (
-    <>
-      <div className="flex flex-col h-[calc(100vh-45px)]">
-        <div className="flex-grow">
+    <div className="flex flex-col h-[calc(100vh-45px)] animate-fade-in">
+      <div className="flex-grow space-y-6">
+        {/* Product Image */}
+        <div className="relative">
           {isFetching && (
-            <div className="skeleton rounded-md w-full h-[350px]"></div>
+            <div className="bg-gray-200 animate-pulse rounded-2xl w-full h-80"></div>
           )}
           {!isFetching && (
-            <img
-              src={product?.image}
-              loading="lazy"
-              alt="product-image"
-              className="w-full h-[350px] rounded-md object-cover"
-            />
-          )}
-
-          {isFetching && (
-            <div className="skeleton rounded-md mt-5 w-full h-[28px]"></div>
-          )}
-          {!isFetching && (
-            <div className="text-xl mt-5 font-bold">{product?.title}</div>
-          )}
-
-          {isFetching && (
-            <div className="skeleton rounded-md w-1/3 h-[20px] mt-2"></div>
-          )}
-          {!isFetching && (
-            <div className="font-medium text-black/40 mt-2 mb-2">
-              {product?.category.name}
+            <div className="relative overflow-hidden rounded-2xl shadow-medium">
+              <img
+                src={product?.image}
+                loading="lazy"
+                alt="product-image"
+                className="w-full h-80 object-cover transition-transform duration-300 hover:scale-105"
+              />
+              {/* Status Badge */}
+              <div className="absolute top-4 right-4">
+                {product?.is_active ? (
+                  <span className="bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-medium px-3 py-1 rounded-full shadow-medium">
+                    В наличии
+                  </span>
+                ) : (
+                  <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-medium px-3 py-1 rounded-full shadow-medium">
+                    Нет в наличии
+                  </span>
+                )}
+              </div>
             </div>
-          )}
-
-          {!isFetching &&
-            (product?.is_active ? (
-              <span className="font-semibold text-[#1EA1F1] mb-2">
-                Есть в наличии
-              </span>
-            ) : (
-              <span className="font-semibold text-red-500 mb-2">
-                Нет в наличии
-              </span>
-            ))}
-
-          {isFetching && (
-            <div className="skeleton rounded-md w-1/2 h-[32px] mt-2 mb-2"></div>
-          )}
-          {!isFetching && (
-            <div className="font-medium text-2xl flex-grow mb-2 mt-2">
-              Цена: {product?.price?.toLocaleString()}
-            </div>
-          )}
-
-          {isFetching && (
-            <>
-              <div className="skeleton rounded-md w-full h-[18px] mt-5"></div>
-              <div className="skeleton rounded-md w-full h-[18px] mt-2"></div>
-              <div className="skeleton rounded-md w-full h-[18px] mt-2"></div>
-              <div className="skeleton rounded-md w-full h-[18px] mt-2"></div>
-              <div className="skeleton rounded-md w-full h-[18px] mt-2"></div>
-            </>
-          )}
-          {!isFetching && (
-            <>
-              <div className="font-bold">Описание</div>
-              <div>{product?.description}</div>
-            </>
           )}
         </div>
-        <div className="flex-grow-0">
-          {error && <div>{error}</div>}
 
-          {!!product?.basket_count && (
-            <Button
-              title="Добавлено в корзину"
-              loading={isLoading}
-              onClick={() => {}}
-              className="btn-disabled border-none btn-lg mt-8"
-            />
+        {/* Product Info */}
+        <div className="space-y-4">
+          {/* Title */}
+          {isFetching && (
+            <div className="bg-gray-200 animate-pulse rounded-lg w-3/4 h-8"></div>
           )}
-          {!product?.basket_count && (
-            <Button
-              title="Добавить в корзину"
-              loading={isLoading}
-              className={clsx('btn-lg mt-8', {
-                'btn-disabled border-none': !product?.is_active,
-              })}
-              onClick={() => {
-                addToCArt(product?.id)
-              }}
-            />
+          {!isFetching && (
+            <h1 className="text-2xl font-bold text-gray-800 leading-tight">
+              {product?.title}
+            </h1>
+          )}
+
+          {/* Category */}
+          {isFetching && (
+            <div className="bg-gray-200 animate-pulse rounded-lg w-1/3 h-6"></div>
+          )}
+          {!isFetching && (
+            <div className="flex items-center gap-2">
+              <span className="bg-gradient-to-r from-primary-100 to-secondary-100 text-primary-700 text-sm font-medium px-3 py-1 rounded-full">
+                {product?.category.name}
+              </span>
+            </div>
+          )}
+
+          {/* Price */}
+          {isFetching && (
+            <div className="bg-gray-200 animate-pulse rounded-lg w-1/2 h-10"></div>
+          )}
+          {!isFetching && (
+            <div className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+              {Number(product?.price).toLocaleString()}
+            </div>  
+          )}
+
+          {/* Description */}
+          {isFetching && (
+            <div className="space-y-2">
+              <div className="bg-gray-200 animate-pulse rounded-lg w-full h-4"></div>
+              <div className="bg-gray-200 animate-pulse rounded-lg w-full h-4"></div>
+              <div className="bg-gray-200 animate-pulse rounded-lg w-3/4 h-4"></div>
+            </div>
+          )}
+          {!isFetching && (
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-secondary-500 rounded-full"></div>
+                Описание
+              </h2>
+              <div className="text-gray-600 leading-relaxed bg-white/60 backdrop-blur-sm p-4 rounded-xl border border-gray-200">
+                {product?.description}
+              </div>
+            </div>
           )}
         </div>
       </div>
-    </>
+
+      {/* Action Button */}
+      <div className="flex-grow-0 pt-6">
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-4">
+            {error}
+          </div>
+        )}
+
+        {!!product?.basket_count && (
+          <Button
+            title="Добавлено в корзину"
+            loading={isLoading}
+            onClick={() => {}}
+            variant="outline"
+            size="lg"
+            className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+          />
+        )}
+        {!product?.basket_count && (
+          <Button
+            title="Добавить в корзину"
+            loading={isLoading}
+            variant={product?.is_active ? "primary" : "outline"}
+            size="lg"
+            className={clsx({
+              'opacity-50 cursor-not-allowed': !product?.is_active,
+            })}
+            onClick={() => {
+              if (product?.is_active) {
+                addToCArt(product?.id)
+              }
+            }}
+          />
+        )}
+      </div>
+    </div>
   )
 }

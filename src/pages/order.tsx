@@ -103,114 +103,148 @@ const Order = () => {
   }
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-45px)]">
-      <div className="text-center font-bold text-lg mb-5">
-        {t('orderProduct')}
+    <div className="relative flex flex-col h-[calc(100vh-45px)] animate-fade-in">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+            {t('orderProduct')}
+          </h1>
+        </div>
       </div>
+
+      {/* Error Alert */}
       {errorText && (
-        <div role="alert" className="alert alert-error nowrap">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>{errorText}</span>
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-6 animate-slide-up">
+          <div className="flex items-center gap-3">
+            <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium">{errorText}</span>
+          </div>
         </div>
       )}
-      <form className="flex-grow" onSubmit={handleSubmit(onSubmit)}>
-        <InputRef
-          placeholder={t('register_number')}
-          label={t('register_number')}
-          icon={false}
-          type="tel"
-          error={!!errors.order_id}
-          errorMessage={errors.order_id?.message}
-          {...register('order_id', { required: t('required') })}
-        />
 
-        <InputRef
-          placeholder="ФИО"
-          label="ФИО"
-          icon={false}
-          type="text"
-          error={!!errors.full_name}
-          errorMessage={errors.full_name?.message}
-          {...register('full_name', { required: t('required') })}
-        />
-
-        <label className="form-control w-full">
-          <div className="label">
-            <span className="label-text font-medium">{t('phone')}</span>
-          </div>
-          <Controller
-            name={'phone'}
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, name, value } }) => (
-              <PatternFormat
-                type="tel"
-                placeholder="+998 00 000 00 00"
-                format="+998 ## ### ## ##"
-                allowEmptyFormatting
-                mask=" "
-                className="input input-bordered input-secondary w-full"
-                name={name}
-                onChange={onChange}
-                value={value}
-                required={true}
-              />
-            )}
+      {/* Form */}
+      <form className="flex-grow space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <div className="space-y-4">
+          <InputRef
+            placeholder={t('register_number')}
+            label={t('register_number')}
+            icon={false}
+            type="tel"
+            error={!!errors.order_id}
+            errorMessage={errors.order_id?.message}
+            {...register('order_id', { required: t('required') })}
           />
-          {errors.phone && (
-            <div className="label">
-              <span className="label-text-alt text-red-500">
-                {t('required')}
-              </span>
-            </div>
-          )}
-        </label>
 
-        <InputRef
-          placeholder={t('address')}
-          label={t('address')}
-          icon={false}
-          type="text"
-          error={!!errors.address}
-          errorMessage={errors.address?.message}
-          {...register('address', { required: t('required') })}
-        />
+          <InputRef
+            placeholder="ФИО"
+            label="ФИО"
+            icon={false}
+            type="text"
+            error={!!errors.full_name}
+            errorMessage={errors.full_name?.message}
+            {...register('full_name', { required: t('required') })}
+          />
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              {t('phone')}
+            </label>
+            <Controller
+              name={'phone'}
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, name, value } }) => (
+                <PatternFormat
+                  type="tel"
+                  placeholder="+998 00 000 00 00"
+                  format="+998 ## ### ## ##"
+                  allowEmptyFormatting
+                  mask=" "
+                  className="w-full px-4 py-3 text-base transition-all duration-300 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent hover:border-gray-400 bg-white/80 backdrop-blur-sm shadow-soft hover:shadow-medium placeholder-gray-400"
+                  name={name}
+                  onChange={onChange}
+                  value={value}
+                  required={true}
+                />
+              )}
+            />
+            {errors.phone && (
+              <div className="flex items-center gap-2 text-red-500 text-sm">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span>{t('required')}</span>
+              </div>
+            )}
+          </div>
+
+          <InputRef
+            placeholder={t('address')}
+            label={t('address')}
+            icon={false}
+            type="text"
+            error={!!errors.address}
+            errorMessage={errors.address?.message}
+            {...register('address', { required: t('required') })}
+          />
+        </div>
+
         <Button
           title={t('order')}
           onClick={handleSubmit(onSubmit)}
-          className="mt-10"
+          variant="primary"
+          size="lg"
+          className="w-full"
           loading={isLoading}
           disabled={isLoading}
         />
       </form>
 
-      <div className="flex-grow-0 p-3 mt-10 rounded-t-md shadow-md border text-xl">
-        <div className="flex justify-between items-center">
-          <div>{t('allPrice')}:</div>
-          <div>{totalPrice?.toLocaleString()} сум</div>
-        </div>
-        <div className="flex justify-between items-center">
-          <div>{t('deliver')}:</div>
-          <div>{deliverPrice} сум</div>
-        </div>
-        <div className="flex justify-between items-center border-t pt-3 mt-3">
-          <div className="font-bold text-2xl">{t('itogo')}:</div>
-          <div className="font-bold text-2xl">
-            {totalPrice?.toLocaleString()} сум
+      {/* Order Summary */}
+      <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200 rounded-t-2xl shadow-strong p-6 mt-6 animate-fade-in">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-secondary-500 rounded-full"></div>
+            Итого к оплате
+          </h3>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 font-medium">{t('allPrice')}:</span>
+              <span className="text-lg font-semibold text-gray-800">
+                {totalPrice?.toLocaleString()} ₽
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 font-medium">{t('deliver')}:</span>
+              <span className="text-lg font-semibold text-gray-800">
+                {deliverPrice?.toLocaleString()} ₽
+              </span>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex justify-between items-center">
+              <span className="text-xl font-bold text-gray-800">{t('itogo')}:</span>
+              <div className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                {totalPrice?.toLocaleString()} ₽
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center pt-2">
+            <div className="w-16 h-1 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full"></div>
           </div>
         </div>
       </div>

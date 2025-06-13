@@ -18,16 +18,19 @@ export const Categories = ({
   const { t } = useTranslation()
 
   return (
-    <>
-      <div className="font-bold text-lg mt-5">{t('chooseCategory')}</div>
+    <div className="space-y-4 animate-fade-in">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-secondary-500 rounded-full"></div>
+        <h2 className="text-xl font-bold text-gray-800">{t('chooseCategory')}</h2>
+      </div>
 
       <div className="overflow-x-auto scroll-m-4 no-scrollbar">
-        <div className="inline-flex rounded-md mt-5 gap-5 select-none">
+        <div className="inline-flex gap-3 select-none pb-2">
           {categoryLoading &&
             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
               <div
                 key={item}
-                className="skeleton w-[100px] h-[38px] rounded-md"
+                className="bg-gray-200 animate-pulse w-24 h-10 rounded-xl"
               ></div>
             ))}
           {!categoryLoading &&
@@ -36,8 +39,11 @@ export const Categories = ({
                 key={category.id}
                 type="button"
                 className={clsx(
-                  'rounded-lg border shadow-sm border-gray-200 text-sm font-medium px-4 py-2 text-gray-900',
-                  { 'bg-[#1EA1F1] text-white': category.id === category_id }
+                  'px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 active:scale-95',
+                  'border-2 shadow-soft hover:shadow-medium',
+                  category.id === category_id
+                    ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white border-transparent shadow-medium'
+                    : 'bg-white/80 backdrop-blur-sm border-gray-200 text-gray-700 hover:border-primary-300 hover:text-primary-600'
                 )}
                 onClick={() => setCategory_id(category.id)}
               >
@@ -46,6 +52,6 @@ export const Categories = ({
             ))}
         </div>
       </div>
-    </>
+    </div>
   )
 }

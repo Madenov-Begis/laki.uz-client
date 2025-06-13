@@ -1,7 +1,4 @@
-import { IconButton } from '@/shared/ui/icon-button/icon-button'
 import { CartItem } from '../types/cart-types'
-import { useTranslation } from 'react-i18next'
-
 interface CartItemProps {
   item: CartItem
   handleMinusCount: (id: number, count: number) => void
@@ -23,69 +20,111 @@ export const CartPoduct = (props: CartItemProps) => {
     isDeleteLoading,
   } = props
 
-  const { t } = useTranslation()
-
   return (
     <div
-      className="flex gap-4 rounded-md p-2 mb-5 border border-[#62626233]"
+      className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-4 shadow-soft hover:shadow-medium transition-all duration-300 group"
       key={item.id}
     >
-      <img
-        src={item.product.image}
-        alt="product-image"
-        className="w-[28%] aspect-[4/3] rounded-md object-cove"
-      />
-      <div className="flex flex-col w-[75%]">
-        <div className="font-bold line-clamp-2">{item.product.name}</div>
-        <div className="flex-grow opacity-50 font-medium">
-          {t('price')}: {item.product.price}
+      <div className="flex gap-4">
+        {/* Product Image */}
+        <div className="relative">
+          <img
+            src={item.product.image}
+            alt="product-image"
+            className="w-20 h-20 rounded-xl object-cover shadow-soft"
+          />
+          <div className="absolute -top-1 -right-1 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-medium">
+            {item.count}
+          </div>
         </div>
 
-        <div className="flex justify-between items-center">
-          <div className="flex items-center flex-grow-0">
-            <IconButton
-              onClick={() => handleMinusCount(item.id, item.count)}
-              loading={isMinusLoading === item.id ? true : false}
-              disabled={
-                isMinusLoading === item.id ? true : false || item.count === 1
-              }
-            >
-              &minus;
-            </IconButton>
-            <span className="flex items-center px-4 text-md font-medium">
-              {item.count}
-            </span>
-            <IconButton
-              onClick={() => handleAddCount(item.id)}
-              loading={isPlusLoading === item.id ? true : false}
-              disabled={isPlusLoading === item.id ? true : false}
-            >
-              &#43;
-            </IconButton>
+        {/* Product Info */}
+        <div className="flex-1 space-y-3">
+          <div>
+            <h3 className="font-bold text-gray-800 text-lg leading-tight group-hover:text-primary-600 transition-colors duration-200">
+              {item.product.name}
+            </h3>
+            <div className="text-lg font-semibold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+              {Number(item.product.price).toLocaleString()}
+            </div>
           </div>
 
-          <IconButton
-            className="btn btn-circle"
-            onClick={() => handleDelete(item.id)}
-            loading={isDeleteLoading === item.id ? true : false}
-            disabled={isDeleteLoading === item.id ? true : false}
-          >
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 15 15"
-              fill="#fff"
-              xmlns="http://www.w3.org/2000/svg"
+          {/* Controls */}
+          <div className="flex justify-between items-center">
+            {/* Quantity Controls */}
+            <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-1">
+              <button
+                onClick={() => handleMinusCount(item.id, item.count)}
+                disabled={isMinusLoading === item.id || item.count === 1}
+                className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-primary-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isMinusLoading === item.id ? (
+                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </button>
+
+              <span className="px-3 text-lg font-semibold text-gray-800 min-w-[2rem] text-center">
+                {item.count}
+              </span>
+
+              <button
+                onClick={() => handleAddCount(item.id)}
+                disabled={isPlusLoading === item.id}
+                className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-primary-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isPlusLoading === item.id ? (
+                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+
+            {/* Delete Button */}
+            <button
+              onClick={() => handleDelete(item.id)}
+              disabled={isDeleteLoading === item.id}
+              className="w-10 h-10 rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white flex items-center justify-center shadow-medium hover:shadow-strong transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              <path
-                d="M12.0779 5.91763C12.0779 5.91763 11.7386 10.127 11.5417 11.9001C11.4479 12.747 10.9248 13.2433 10.0679 13.2589C8.43731 13.2883 6.80481 13.2901 5.17481 13.2558C4.35044 13.2389 3.83606 12.7364 3.74419 11.9045C3.54606 10.1158 3.20856 5.91763 3.20856 5.91763M12.9425 3.89983H2.34375M10.9003 3.89982C10.4096 3.89982 9.98713 3.55294 9.89088 3.07232L9.739 2.31232C9.64525 1.96169 9.32775 1.71919 8.96588 1.71919H6.32025C5.95838 1.71919 5.64088 1.96169 5.54713 2.31232L5.39525 3.07232C5.299 3.55294 4.8765 3.89982 4.38588 3.89982"
-                stroke="#fff"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </IconButton>
+              {isDeleteLoading === item.id ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
